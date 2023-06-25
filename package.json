@@ -13,7 +13,8 @@
   "dependencies": {
     "canvas-confetti": "^1.5.1",
     "lodash-es": "^4.17.21",
-    "vue": "^3.2.37"
+    "vue": "^3.2.37",
+    "vue-router": "^4.2.2"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.26.3",

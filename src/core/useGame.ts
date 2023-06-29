@@ -35,7 +35,7 @@ export function useGame(config: GameConfig): Game {
     // Fetch the initial usage count from the backend when the component is created
   async function fetchUsageCount() {
     if (playerId) {
-      const response = await fetch(`http://m447he.smartdevops.uk/api/player/usage-count/${playerId}`);
+      const response = await fetch(`https://m447he.smartdevops.uk/api/player/usage-count/${playerId}`);
       const data = await response.json();
       remainingBacks.value = data.backs;
       remainingRemoves.value = data.removes;
@@ -123,7 +123,7 @@ export function useGame(config: GameConfig): Game {
     const index = selectedNodes.value.findIndex(o => o.id === node.id);
     selectedNodes.value.splice(index, 1);
     
-    const response = await fetch(`http://m447he.smartdevops.uk/api/player/use-back/${playerId}`, { method: 'POST' });
+    const response = await fetch(`https://m447he.smartdevops.uk/api/player/use-back/${playerId}`, { method: 'POST' });
     const data = await response.json();
     remainingBacks.value = data.backs;
 }
@@ -149,7 +149,7 @@ export function useGame(config: GameConfig): Game {
       removeList.value.push(node);
     }
     // Decrement the remaining usage count
-    const response = await fetch(`http://m447he.smartdevops.uk/api/player/use-remove/${playerId}`, { method: 'POST' });
+    const response = await fetch(`https://m447he.smartdevops.uk/api/player/use-remove/${playerId}`, { method: 'POST' });
     const data = await response.json();
     remainingRemoves.value = data.removes;
 }

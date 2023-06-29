@@ -14,8 +14,6 @@ const dropAudioRef = ref<HTMLAudioElement | undefined>()
 const winAudioRef = ref<HTMLAudioElement | undefined>()
 const loseAudioRef = ref<HTMLAudioElement | undefined>()
 const welAudioRef = ref<HTMLAudioElement | undefined>()
-const remainingBacks = ref(0); // Store remaining usage count for handleBack()
-const remainingRemoves = ref(0); // Store remaining usage count for handleRemove()
 const curLevel = ref(1)
 const showTip = ref(false)
 const LevelConfig = [
@@ -157,29 +155,6 @@ onMounted(() => {
       <button :disabled="backFlag" @click="handleBack">
         回退
       </button>
-    </div>
-    <div w-full color="#000" fw-600 text-center pb-10px>
-      <span mr-20px>designer: Teacher Face</span>
-      by: Xc
-      <a
-        class="icon-btn"
-        color="#000"
-        i-carbon-logo-github
-        rel="noreferrer"
-        href="https://github.com/chenxch"
-        target="_blank"
-        title="GitHub"
-      />
-      <span
-        text-12px
-        color="#00000018"
-      >
-        <span
-          class="icon-btn"
-          text-2
-          i-carbon:arrow-up-left
-        />
-        star buff</span>
     </div>
     <audio
       ref="clickAudioRef"

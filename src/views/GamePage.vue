@@ -3,13 +3,19 @@ import { onMounted, ref } from 'vue'
 import Card from '../components/card.vue'
 import { useGame } from '../core/useGame'
 import { basicCannon, schoolPride } from '../core/utils'
+import { useRoute, useRouter } from "vue-router";
 
+const route = useRoute();
+const router = useRouter();
+const playerId = route.query.playerId;
 const containerRef = ref<HTMLElement | undefined>()
 const clickAudioRef = ref<HTMLAudioElement | undefined>()
 const dropAudioRef = ref<HTMLAudioElement | undefined>()
 const winAudioRef = ref<HTMLAudioElement | undefined>()
 const loseAudioRef = ref<HTMLAudioElement | undefined>()
 const welAudioRef = ref<HTMLAudioElement | undefined>()
+const remainingBacks = ref(0); // Store remaining usage count for handleBack()
+const remainingRemoves = ref(0); // Store remaining usage count for handleRemove()
 const curLevel = ref(1)
 const showTip = ref(false)
 const LevelConfig = [
@@ -30,6 +36,7 @@ const {
   removeFlag,
   removeList,
   handleSelectRemove,
+  fetchUsageCount,
   initData,
 } = useGame({
   container: containerRef,
@@ -79,27 +86,16 @@ function handleWin() {
 }
 
 function handleLose() {
-  loseAudioRef.value?.play()
+  loseAudioRef.value?.play();
   setTimeout(() => {
-    alert('槽位已满，再接再厉~')
-    // window.location.reload()
-    nodes.value = []
-    removeList.value = []
-    selectedNodes.value = []
-    welAudioRef.value?.play()
-    curLevel.value = 0
-    showTip.value = true
-    setTimeout(() => {
-      showTip.value = false
-    }, 1500)
-    setTimeout(() => {
-      initData(LevelConfig[curLevel.value])
-      curLevel.value++
-    }, 2000)
-  }, 500)
+    alert("槽位已满，再接再厉~");
+    // Navigate to the homepage and pass the playerId as a query parameter
+    router.push({ name: "home", query: { playerId } });
+  }, 500);
 }
 
 onMounted(() => {
+  fetchUsageCount();
   initData()
 })
 </script>

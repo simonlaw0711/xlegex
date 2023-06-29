@@ -23,31 +23,33 @@
           <div class="modal-wrapper">
             <div class="leaderboard-container">
               <h3>Leaderboard</h3>
-              <table class="table table-hover">
-                <thead>
-                  <tr>
-                    <th>Rank</th>
-                    <th>Player</th>
-                    <th>Score</th>
-                    <th>Update Time</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="player in sortedLeaderboard" :key="player.id">
-                    <td>{{ player.player_rank }}</td>
-                    <td>
-                      <div class="d-flex">
-                        <img class="avatar" :src="player.avatar" alt="Player Avatar" />
-                        <span>{{ player.nickname }}</span>
-                      </div>
-                    </td>
-                    <td>
-                      <span class="score-container">{{ player.score }}</span>
-                    </td>
-                    <td>{{ player.update_time }}</td>
-                  </tr>
-                </tbody>
-              </table>
+              <div class="table-responsive"> <!-- Add the table-responsive container -->
+                <table class="table table-hover">
+                  <thead>
+                    <tr>
+                      <th class="rank">Rank</th>
+                      <th class="player">Player</th>
+                      <th>Score</th>
+                      <th>Updated Time</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="player in sortedLeaderboard" :key="player.id">
+                      <td class="rank">{{ player.player_rank }}</td>
+                      <td>
+                        <div class="d-flex">
+                          <img class="avatar" :src="player.avatar" alt="Player Avatar" />
+                          <span>{{ player.nickname }}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <span class="score-container">{{ player.score }}</span>
+                      </td>
+                      <td>{{ player.update_time }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div> <!-- Close the table-responsive container -->
               <button class="btn btn-secondary" @click="showLeaderboardModal = false">Close</button>
             </div>
           </div>
@@ -82,27 +84,28 @@
   });
   
   const startGame = async () => {
-    try {
-      const response = await fetch(`http://127.0.0.1:8080/api/check-subscription/${playerId.value}`);
-      
-      if (!response.ok) {
-        throw new Error("Failed to check subscription");
-      }
-  
-      const data = await response.json();
-  
-      if (data.subscribed) {
-        state.gameStarted = true;
-        router.push("/game");
-      } else {
-        // Show an error message or handle the case when the user is not subscribed
-        showModal.value = true;
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      // Handle the error, e.g., show an error message to the user
+  try {
+    const response = await fetch(`http://127.0.0.1:8080/api/check-subscription/${playerId.value}`);
+
+    if (!response.ok) {
+      throw new Error("Failed to check subscription");
     }
-  };
+
+    const data = await response.json();
+
+    if (data.subscribed) {
+      state.gameStarted = true;
+      // Pass the playerId as a query parameter when navigating to the /game page
+      router.push({ path: "/game", query: { playerId: playerId.value } });
+    } else {
+      // Show an error message or handle the case when the user is not subscribed
+      showModal.value = true;
+    }
+  } catch (error) {
+    console.error("Error:", error);
+    // Handle the error, e.g., show an error message to the user
+  }
+};
 
   const openLeaderboard = async () => {
     await fetchLeaderboard();
@@ -133,6 +136,50 @@
   
 <style lang="scss" scoped>
   @import "@/../node_modules/bootstrap/scss/bootstrap";
+
+  /* Existing media query */
+  @media (max-width: 767px) {
+    .leaderboard-container {
+      width: 100%;
+    }
+
+    .table {
+      table-layout: fixed;
+      word-wrap: break-word;
+    }
+  }
+
+  /* New media query for mobile view adjustments */
+  @media (max-width: 480px) {
+    .leaderboard-container {
+      h3 {
+        font-size: 1.5rem; /* Decrease the font size for the heading */
+      }
+
+      .avatar {
+        width: 24px; /* Decrease the avatar size */
+        height: 24px;
+      }
+
+      .table {
+        font-size: 0.8rem; /* Decrease the font size for the table */
+      }
+      
+      .btn {
+        font-size: 0.8rem; /* Decrease the font size for the button */
+        padding: 0.25rem 0.5rem; /* Reduce the padding for the button */
+      }
+
+      .rank {
+        width: 50px;
+      }
+
+      .player {
+        width: 110px;
+      }
+
+    }
+  }
 </style>
 
 <style>
@@ -190,12 +237,11 @@
 
   .table td {
     vertical-align: middle;
-    text-align: center;
     padding: 5px; /* Add padding to table cells for more spacing */
   }
 
-  .table .rank {
-    text-align: center; /* Center the text in the Rank column's cells */
+  .rank {
+    text-align: center;
   }
 
   .player-info {

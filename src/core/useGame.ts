@@ -19,7 +19,17 @@ export function useGame(config: GameConfig): Game {
   let perFloorNodes: CardNode[] = []
   const selectedNodes = ref<CardNode[]>([])
   const size = 40
+  const remainingBacks = ref(0); // Store remaining usage count for handleBack()
+  const remainingRemoves = ref(0); // Store remaining usage count for handleRemove()
   let floorList: number[][] = []
+
+  async function fetchUsageCount() {
+    // Replace the URL with your actual backend API endpoint
+    const response = await fetch('https://your-backend-api/usage-count');
+    const data = await response.json();
+    remainingBacks.value = data.backs;
+    remainingRemoves.value = data.removes;
+  }
 
   function updateState() {
     nodes.value.forEach((o) => {
@@ -85,6 +95,10 @@ export function useGame(config: GameConfig): Game {
   }
 
   function handleBack() {
+    if (remainingBacks.value <= 0) {
+      // If no remaining usage, return early
+      return;
+    }
     const node = preNode.value
     if (!node)
       return
@@ -97,7 +111,10 @@ export function useGame(config: GameConfig): Game {
   }
 
   function handleRemove() {
-  // 从selectedNodes.value中取出3个 到 removeList.value中
+    if (remainingRemoves.value <= 0) {
+      // If no remaining usage, return early
+      return;
+    }
 
     if (selectedNodes.value.length < 3)
       return
@@ -203,5 +220,6 @@ export function useGame(config: GameConfig): Game {
     handleRemove,
     handleSelectRemove,
     initData,
+    fetchUsageCount
   }
 }

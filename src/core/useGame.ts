@@ -1,5 +1,6 @@
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { ceil, floor, random, shuffle } from 'lodash-es'
+import { useRouter } from 'vue-router'
 const defaultGameConfig: GameConfig = {
   cardNum: 4,
   layerNum: 2,
@@ -8,7 +9,24 @@ const defaultGameConfig: GameConfig = {
 }
 
 export function useGame(config: GameConfig): Game {
+  const router = useRouter();
+  const playerId = router.currentRoute.value.query.playerId;
   const { container, delNode, events = {}, ...initConfig } = { ...defaultGameConfig, ...config }
+  const remainingBacks = ref(0); // Store remaining usage count for handleBack()
+  const remainingRemoves = ref(0); // Store remaining usage count for handleRemove()
+
+  // Fetch the initial usage count from the backend when the component is created
+  async function fetchUsageCount() {
+    if (playerId) {
+      const response = await fetch(`http://127.0.0.1:8080/api/player/usage-count/${playerId}`);
+      const data = await response.json();
+      remainingBacks.value = data.backs;
+      remainingRemoves.value = data.removes;
+    } else {
+      console.error('Player ID is not provided');
+    }
+  }
+  
   const histroyList = ref<CardNode[]>([])
   const backFlag = ref(false)
   const removeFlag = ref(false)
@@ -94,39 +112,60 @@ export function useGame(config: GameConfig): Game {
     handleSelect(node)
   }
 
-  function handleBack() {
+  // Update the handleBack() function to check the remaining usage count and decrement it
+  async function handleBack() {
+    // Fetch the latest usage count
+    await fetchUsageCount();
+  
     if (remainingBacks.value <= 0) {
       // If no remaining usage, return early
       return;
     }
-    const node = preNode.value
-    if (!node)
-      return
-    preNode.value = null
-    backFlag.value = true
-    node.state = 0
-    delNode && nodes.value.push(node)
-    const index = selectedNodes.value.findIndex(o => o.id === node.id)
-    selectedNodes.value.splice(index, 1)
-  }
+    
+    const node = preNode.value;
+    if (!node) {
+      return;
+    }
+    
+    preNode.value = null;
+    backFlag.value = true;
+    node.state = 0;
+    delNode && nodes.value.push(node);
+    const index = selectedNodes.value.findIndex(o => o.id === node.id);
+    selectedNodes.value.splice(index, 1);
+    
+    const response = await fetch(`http://127.0.0.1:8080/api/player/use-back/${playerId}`, { method: 'POST' });
+    const data = await response.json();
+    remainingBacks.value = data.backs;
+}
 
-  function handleRemove() {
+  async function handleRemove() {
+    // Fetch the latest usage count
+    await fetchUsageCount();
+  
     if (remainingRemoves.value <= 0) {
       // If no remaining usage, return early
       return;
     }
-
-    if (selectedNodes.value.length < 3)
-      return
-    removeFlag.value = true
-    preNode.value = null
-    for (let i = 0; i < 3; i++) {
-      const node = selectedNodes.value.shift()
-      if (!node)
-        return
-      removeList.value.push(node)
+    if (selectedNodes.value.length < 3) {
+      return;
     }
-  }
+    removeFlag.value = true;
+    preNode.value = null;
+    for (let i = 0; i < 3; i++) {
+      const node = selectedNodes.value.shift();
+      if (!node) {
+        return;
+      }
+      removeList.value.push(node);
+    }
+    // Decrement the remaining usage count
+    const response = await fetch(`http://127.0.0.1:8080/api/player/use-remove/${playerId}`, { method: 'POST' });
+    const data = await response.json();
+    remainingRemoves.value = data.removes;
+}
+
+  onMounted(fetchUsageCount);
 
   function initData(config?: GameConfig | null) {
     const { cardNum, layerNum, trap } = { ...initConfig, ...config }
@@ -216,6 +255,8 @@ export function useGame(config: GameConfig): Game {
     removeList,
     backFlag,
     handleSelect,
+    remainingBacks,
+    remainingRemoves,
     handleBack,
     handleRemove,
     handleSelectRemove,

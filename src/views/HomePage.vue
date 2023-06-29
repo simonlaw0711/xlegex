@@ -85,7 +85,7 @@
   
   const startGame = async () => {
   try {
-    const response = await fetch(`http://127.0.0.1:8080/api/check-subscription/${playerId.value}`);
+    const response = await fetch(`http://m447he.smartdevops.uk/api/check-subscription/${playerId.value}`);
 
     if (!response.ok) {
       throw new Error("Failed to check subscription");
@@ -114,7 +114,7 @@
 
   const fetchLeaderboard = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:8080/api/player/leaderboard');
+      const response = await fetch('http://m447he.smartdevops.uk/api/player/leaderboard');
 
       if (!response.ok) {
         throw new Error('Failed to fetch leaderboard data');

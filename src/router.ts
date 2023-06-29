@@ -22,7 +22,7 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.path === "/game" && !state.gameStarted) {
+  if (to.path.startsWith("/game") && !state.gameStarted) {
     next({ name: "home" });
   } else {
     next();

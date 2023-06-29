@@ -93,7 +93,7 @@
   
       if (data.subscribed) {
         state.gameStarted = true;
-        router.push("/game");
+        router.push({ name: 'game', query: { playerId: playerId.value } });
       } else {
         // Show an error message or handle the case when the user is not subscribed
         showModal.value = true;

@@ -14,19 +14,6 @@ export function useGame(config: GameConfig): Game {
   const { container, delNode, events = {}, ...initConfig } = { ...defaultGameConfig, ...config }
   const remainingBacks = ref(0); // Store remaining usage count for handleBack()
   const remainingRemoves = ref(0); // Store remaining usage count for handleRemove()
-
-  // Fetch the initial usage count from the backend when the component is created
-  async function fetchUsageCount() {
-    if (playerId) {
-      const response = await fetch(`http://127.0.0.1:8080/api/player/usage-count/${playerId}`);
-      const data = await response.json();
-      remainingBacks.value = data.backs;
-      remainingRemoves.value = data.removes;
-    } else {
-      console.error('Player ID is not provided');
-    }
-  }
-  
   const histroyList = ref<CardNode[]>([])
   const backFlag = ref(false)
   const removeFlag = ref(false)
@@ -37,22 +24,24 @@ export function useGame(config: GameConfig): Game {
   let perFloorNodes: CardNode[] = []
   const selectedNodes = ref<CardNode[]>([])
   const size = 40
-  const remainingBacks = ref(0); // Store remaining usage count for handleBack()
-  const remainingRemoves = ref(0); // Store remaining usage count for handleRemove()
   let floorList: number[][] = []
-
-  async function fetchUsageCount() {
-    // Replace the URL with your actual backend API endpoint
-    const response = await fetch('https://your-backend-api/usage-count');
-    const data = await response.json();
-    remainingBacks.value = data.backs;
-    remainingRemoves.value = data.removes;
-  }
 
   function updateState() {
     nodes.value.forEach((o) => {
       o.state = o.parents.every(p => p.state > 0) ? 1 : 0
     })
+  }
+
+    // Fetch the initial usage count from the backend when the component is created
+  async function fetchUsageCount() {
+    if (playerId) {
+      const response = await fetch(`http://127.0.0.1:8080/api/player/usage-count/${playerId}`);
+      const data = await response.json();
+      remainingBacks.value = data.backs;
+      remainingRemoves.value = data.removes;
+    } else {
+      console.error('Player ID is not provided');
+    }
   }
 
   function handleSelect(node: CardNode) {

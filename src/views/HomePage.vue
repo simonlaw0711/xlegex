@@ -96,7 +96,7 @@
     if (data.subscribed) {
       state.gameStarted = true;
       // Pass the playerId as a query parameter when navigating to the /game page
-      router.push({ path: { name: 'game', query: { playerId: playerId.value } }, query: { playerId: playerId.value } });
+      router.push({ name: 'game', query: { playerId: playerId.value } });
     } else {
       // Show an error message or handle the case when the user is not subscribed
       showModal.value = true;

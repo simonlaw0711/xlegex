@@ -10,6 +10,7 @@ interface Game {
   handleSelectRemove: (node: CardNode) => void;
   handleBack: () => void;
   handleRemove: () => void;
+  fetchUsageCount
   initData: (config?: GameConfig) => void;
 }
 interface GameConfig {

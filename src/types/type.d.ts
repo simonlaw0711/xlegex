@@ -4,13 +4,10 @@ interface Game {
   removeList: Ref<CardNode[]>;
   removeFlag: Ref<boolean>;
   backFlag: Ref<boolean>;
-  remainingBacks: Ref<number>;  // Added type here
-  remainingRemoves: Ref<number>;  // Added type here
   handleSelect: (node: CardNode) => void;
   handleSelectRemove: (node: CardNode) => void;
   handleBack: () => void;
   handleRemove: () => void;
-  fetchUsageCount
   initData: (config?: GameConfig) => void;
 }
 interface GameConfig {

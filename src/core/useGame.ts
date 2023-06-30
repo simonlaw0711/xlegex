@@ -1,19 +1,17 @@
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { ceil, floor, random, shuffle } from 'lodash-es'
-import { useRouter } from 'vue-router'
 const defaultGameConfig: GameConfig = {
   cardNum: 4,
   layerNum: 2,
   trap: true,
   delNode: false,
 }
+export let game_score = ref(0)
+
+
 
 export function useGame(config: GameConfig): Game {
-  const router = useRouter();
-  const user_id = router.currentRoute.value.query.user_id;
   const { container, delNode, events = {}, ...initConfig } = { ...defaultGameConfig, ...config }
-  const remainingBacks = ref(0); // Store remaining usage count for handleBack()
-  const remainingRemoves = ref(0); // Store remaining usage count for handleRemove()
   const histroyList = ref<CardNode[]>([])
   const backFlag = ref(false)
   const removeFlag = ref(false)
@@ -25,6 +23,7 @@ export function useGame(config: GameConfig): Game {
   const selectedNodes = ref<CardNode[]>([])
   const size = 40
   let floorList: number[][] = []
+  
 
   function updateState() {
     nodes.value.forEach((o) => {
@@ -32,19 +31,8 @@ export function useGame(config: GameConfig): Game {
     })
   }
 
-    // Fetch the initial usage count from the backend when the component is created
-  async function fetchUsageCount() {
-    if (user_id) {
-      const response = await fetch(`http://127.0.0.1:8080/api/player/usage-count/${user_id}`);
-      const data = await response.json();
-      remainingBacks.value = data.backs;
-      remainingRemoves.value = data.removes;
-    } else {
-      console.error('Player ID is not provided');
-    }
-  }
-
   function handleSelect(node: CardNode) {
+    // 判断槽位
     if (selectedNodes.value.length === 7)
       return
     node.state = 2
@@ -53,13 +41,16 @@ export function useGame(config: GameConfig): Game {
     const index = nodes.value.findIndex(o => o.id === node.id)
     if (index > -1)
       delNode && nodes.value.splice(index, 1)
-
     // 判断是否有可以消除的节点
     const selectedSomeNode = selectedNodes.value.filter(s => s.type === node.type)
+    // 移除逻辑
     if (selectedSomeNode.length === 2) {
       // 第二个节点索引
       const secondIndex = selectedNodes.value.findIndex(o => o.id === selectedSomeNode[1].id)
       selectedNodes.value.splice(secondIndex + 1, 0, node)
+      // 分数
+      game_score.value ++
+
       // 为了动画效果添加延迟
       setTimeout(() => {
         for (let i = 0; i < 3; i++) {
@@ -83,6 +74,7 @@ export function useGame(config: GameConfig): Game {
       const index = selectedNodes.value.findIndex(o => o.type === node.type)
       if (index > -1)
         selectedNodes.value.splice(index + 1, 0, node)
+        
       else
         selectedNodes.value.push(node)
       // 判断卡槽是否已满，即失败
@@ -91,9 +83,11 @@ export function useGame(config: GameConfig): Game {
         backFlag.value = true
         events.loseCallback && events.loseCallback()
       }
+      
     }
   }
 
+  // 移除功能，此处检测是否加入群组
   function handleSelectRemove(node: CardNode) {
     const index = removeList.value.findIndex(o => o.id === node.id)
     if (index > -1)
@@ -101,60 +95,32 @@ export function useGame(config: GameConfig): Game {
     handleSelect(node)
   }
 
-  // Update the handleBack() function to check the remaining usage count and decrement it
-  async function handleBack() {
-    // Fetch the latest usage count
-    await fetchUsageCount();
-  
-    if (remainingBacks.value <= 0) {
-      // If no remaining usage, return early
-      return;
-    }
-    
-    const node = preNode.value;
-    if (!node) {
-      return;
-    }
-    
-    preNode.value = null;
-    backFlag.value = true;
-    node.state = 0;
-    delNode && nodes.value.push(node);
-    const index = selectedNodes.value.findIndex(o => o.id === node.id);
-    selectedNodes.value.splice(index, 1);
-    
-    const response = await fetch(`http://127.0.0.1:8080/api/player/use-back/${user_id}`, { method: 'POST' });
-    const data = await response.json();
-    remainingBacks.value = data.backs;
-}
+  // 回退功能，此处检测是否加入群组
+  function handleBack() {
+    const node = preNode.value
+    if (!node)
+      return
+    preNode.value = null
+    backFlag.value = true
+    node.state = 0
+    delNode && nodes.value.push(node)
+    const index = selectedNodes.value.findIndex(o => o.id === node.id)
+    selectedNodes.value.splice(index, 1)
+  }
 
-  async function handleRemove() {
-    // Fetch the latest usage count
-    await fetchUsageCount();
-  
-    if (remainingRemoves.value <= 0) {
-      // If no remaining usage, return early
-      return;
-    }
-    if (selectedNodes.value.length < 3) {
-      return;
-    }
-    removeFlag.value = true;
-    preNode.value = null;
+  function handleRemove() {
+  // 从selectedNodes.value中取出3个 到 removeList.value中
+    if (selectedNodes.value.length < 3)
+      return
+    removeFlag.value = true
+    preNode.value = null
     for (let i = 0; i < 3; i++) {
-      const node = selectedNodes.value.shift();
-      if (!node) {
-        return;
-      }
-      removeList.value.push(node);
+      const node = selectedNodes.value.shift()
+      if (!node)
+        return
+      removeList.value.push(node)
     }
-    // Decrement the remaining usage count
-    const response = await fetch(`http://127.0.0.1:8080/api/player/use-remove/${user_id}`, { method: 'POST' });
-    const data = await response.json();
-    remainingRemoves.value = data.removes;
-}
-
-  onMounted(fetchUsageCount);
+  }
 
   function initData(config?: GameConfig | null) {
     const { cardNum, layerNum, trap } = { ...initConfig, ...config }
@@ -244,12 +210,9 @@ export function useGame(config: GameConfig): Game {
     removeList,
     backFlag,
     handleSelect,
-    remainingBacks,
-    remainingRemoves,
     handleBack,
     handleRemove,
     handleSelectRemove,
     initData,
-    fetchUsageCount
   }
 }

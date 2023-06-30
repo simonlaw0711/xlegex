@@ -34,7 +34,6 @@ const {
   removeFlag,
   removeList,
   handleSelectRemove,
-  fetchUsageCount,
   initData,
 } = useGame({
   container: containerRef,
@@ -56,6 +55,22 @@ function handleClickCard() {
   else if (clickAudioRef.value) {
     clickAudioRef.value.load()
     clickAudioRef.value.play()
+  }
+}
+
+function ThandleRemove(){
+  if( user_data.is_subscribed ){
+    handleRemove()
+  }else{
+    alert('未关注群组')
+  }
+}
+
+function ThandleBack(){
+  if( user_data.is_subscribed ){
+    handleBack()
+  }else{
+    alert('未关注群组')
   }
 }
 
@@ -87,13 +102,10 @@ function handleLose() {
   loseAudioRef.value?.play();
   setTimeout(() => {
     alert("槽位已满，再接再厉~");
-    // Navigate to the homepage and pass the user_id as a query parameter
-    router.push({ name: "home", query: { user_id } });
   }, 500);
 }
 
 onMounted(() => {
-  fetchUsageCount();
   initData()
 })
 </script>

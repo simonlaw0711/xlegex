@@ -1,18 +1,18 @@
 <template>
   <div class="home-container">
-    <h1>Welcome to My Game</h1>
-    <p>Here is some information about the game...</p>
+    <h1>达利担保官方比赛</h1>
+    <p>羊了个羊争霸赛，过关就给钱</p>
     <button @click="startGame">Start Game</button>
-    <button @click="openLeaderboard">Leaderboard</button> <!-- Restored leaderboard button -->
+    <button @click="openLeaderboard">排行榜</button> <!-- Restored leaderboard button -->
     <transition name="modal">
       <div v-if="showModal || showLeaderboardModal">
         <!-- Subscription Modal -->
         <div v-if="showModal" class="modal-mask">
           <div class="modal-wrapper">
             <div class="modal-container">
-              <h3>Please follow the link to play the game</h3>
+              <h3>请先关注下面频道，然后开始游戏</h3>
               <p>
-                Join our Telegram group: <a href="https://t.me/dali" target="_blank">https://t.me/dali</a>
+                加入频道: <a href="https://t.me/dali" target="_blank">https://t.me/dali</a>
               </p>
               <button @click="showModal = false">Close</button>
             </div>
@@ -22,15 +22,15 @@
         <div v-if="showLeaderboardModal" class="modal-mask">
           <div class="modal-wrapper">
             <div class="leaderboard-container">
-              <h3>Leaderboard</h3>
+              <h3>排行榜</h3>
               <div class="table-responsive"> <!-- Add the table-responsive container -->
                 <table class="table table-hover">
                   <thead>
                     <tr>
-                      <th class="rank">Rank</th>
-                      <th class="player">Player</th>
-                      <th>Score</th>
-                      <th>Updated Time</th>
+                      <th class="rank">排名</th>
+                      <th class="player">玩家</th>
+                      <th>通关次数</th>
+                      <th>更新时间</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -50,7 +50,7 @@
                   </tbody>
                 </table>
               </div> <!-- Close the table-responsive container -->
-              <button class="btn btn-secondary" @click="showLeaderboardModal = false">Close</button>
+              <button class="btn btn-secondary" @click="showLeaderboardModal = false">关闭</button>
             </div>
           </div>
         </div>
@@ -77,15 +77,15 @@
   const leaderboard = ref<Player[]>([]);
   const showLeaderboardModal = ref(false); // New ref for controlling leaderboard modal visibility
   const router = useRouter();
-  const playerId = ref<string | null>(null);
+  const user_id = ref<string | null>(null);
   
   onMounted(() => {
-    playerId.value = (router.currentRoute.value.query.playerId as string) || null;
+    user_id.value = (router.currentRoute.value.query.user_id as string) || null;
   });
   
   const startGame = async () => {
   try {
-    const response = await fetch(`https://m447he.smartdevops.uk/api/check-subscription/${playerId.value}`);
+    const response = await fetch(`http://127.0.0.1:8080/api/check-subscription/${user_id.value}`);
 
     if (!response.ok) {
       throw new Error("Failed to check subscription");
@@ -95,8 +95,8 @@
 
     if (data.subscribed) {
       state.gameStarted = true;
-      // Pass the playerId as a query parameter when navigating to the /game page
-      router.push({ name: 'game', query: { playerId: playerId.value } });
+      // Pass the user_id as a query parameter when navigating to the /game page
+      router.push({ name: 'game', query: { user_id: user_id.value } });
     } else {
       // Show an error message or handle the case when the user is not subscribed
       showModal.value = true;
@@ -114,7 +114,7 @@
 
   const fetchLeaderboard = async () => {
     try {
-      const response = await fetch('https://m447he.smartdevops.uk/api/player/leaderboard');
+      const response = await fetch('http://127.0.0.1:8080/api/player/leaderboard');
 
       if (!response.ok) {
         throw new Error('Failed to fetch leaderboard data');

@@ -7,7 +7,7 @@ import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
 const router = useRouter();
-const playerId = route.query.playerId;
+const user_id = route.query.user_id;
 const containerRef = ref<HTMLElement | undefined>()
 const clickAudioRef = ref<HTMLAudioElement | undefined>()
 const dropAudioRef = ref<HTMLAudioElement | undefined>()
@@ -87,8 +87,8 @@ function handleLose() {
   loseAudioRef.value?.play();
   setTimeout(() => {
     alert("槽位已满，再接再厉~");
-    // Navigate to the homepage and pass the playerId as a query parameter
-    router.push({ name: "home", query: { playerId } });
+    // Navigate to the homepage and pass the user_id as a query parameter
+    router.push({ name: "home", query: { user_id } });
   }, 500);
 }
 

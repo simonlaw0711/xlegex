@@ -10,7 +10,7 @@ const defaultGameConfig: GameConfig = {
 
 export function useGame(config: GameConfig): Game {
   const router = useRouter();
-  const playerId = router.currentRoute.value.query.playerId;
+  const user_id = router.currentRoute.value.query.user_id;
   const { container, delNode, events = {}, ...initConfig } = { ...defaultGameConfig, ...config }
   const remainingBacks = ref(0); // Store remaining usage count for handleBack()
   const remainingRemoves = ref(0); // Store remaining usage count for handleRemove()
@@ -34,8 +34,8 @@ export function useGame(config: GameConfig): Game {
 
     // Fetch the initial usage count from the backend when the component is created
   async function fetchUsageCount() {
-    if (playerId) {
-      const response = await fetch(`https://m447he.smartdevops.uk/api/player/usage-count/${playerId}`);
+    if (user_id) {
+      const response = await fetch(`http://127.0.0.1:8080/api/player/usage-count/${user_id}`);
       const data = await response.json();
       remainingBacks.value = data.backs;
       remainingRemoves.value = data.removes;
@@ -123,7 +123,7 @@ export function useGame(config: GameConfig): Game {
     const index = selectedNodes.value.findIndex(o => o.id === node.id);
     selectedNodes.value.splice(index, 1);
     
-    const response = await fetch(`https://m447he.smartdevops.uk/api/player/use-back/${playerId}`, { method: 'POST' });
+    const response = await fetch(`http://127.0.0.1:8080/api/player/use-back/${user_id}`, { method: 'POST' });
     const data = await response.json();
     remainingBacks.value = data.backs;
 }
@@ -149,7 +149,7 @@ export function useGame(config: GameConfig): Game {
       removeList.value.push(node);
     }
     // Decrement the remaining usage count
-    const response = await fetch(`https://m447he.smartdevops.uk/api/player/use-remove/${playerId}`, { method: 'POST' });
+    const response = await fetch(`http://127.0.0.1:8080/api/player/use-remove/${user_id}`, { method: 'POST' });
     const data = await response.json();
     remainingRemoves.value = data.removes;
 }

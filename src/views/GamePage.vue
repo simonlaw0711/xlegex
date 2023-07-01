@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref, computed, nextTick } from 'vue'
+import { onMounted, ref, onUnmounted } from 'vue'
 import Card from '../components/card.vue'
 import { useGame } from '../core/useGame'
 import { basicCannon, schoolPride } from '../core/utils'
 import { useRoute, useRouter } from "vue-router";
+import inGameMusic from '../assets/music/in-game.mp3';
 
 const route = useRoute();
 const router = useRouter();
@@ -17,6 +18,7 @@ const welAudioRef = ref<HTMLAudioElement | undefined>()
 const curLevel = ref(1)
 const showTip = ref(false)
 const showLevel = ref(false)
+const audio = ref(new Audio(inGameMusic));
 
 const joinGroup_flag = ref(false)
 const loseTitle_flag = ref(false)
@@ -116,8 +118,15 @@ function handleAfterLoseLeave() {
 }
 
 onMounted(() => {
+  audio.value.loop = true;
+  audio.value.play();
   initData()
 })
+
+onUnmounted(() => {
+  audio.value.pause();
+});
+
 </script>
 
 <template>

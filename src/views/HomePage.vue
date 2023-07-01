@@ -63,9 +63,10 @@
   
 <script setup lang="ts">
   import { useRouter } from 'vue-router';
-  import { onMounted, ref, computed } from 'vue';
+  import { onMounted, ref, computed, onUnmounted } from 'vue';
   import state from '../state';
   import gameStartSound from '../assets/music/home.mp3';
+  import inGameMusic from '../assets/music/in-game.mp3';
 
   interface Player {
     id: number;
@@ -81,14 +82,20 @@
   const showLeaderboardModal = ref(false); // New ref for controlling leaderboard modal visibility
   const router = useRouter();
   const user_id = ref<string | null>(null);
+  const audio = ref(new Audio(gameStartSound));
   
   onMounted(() => {
     user_id.value = (router.currentRoute.value.query.user_id as string) || null;
     // Play audio when component is mounted
-    const audio = new Audio(gameStartSound);
-    audio.play();
+    audio.value.loop = true;
+    audio.value.play();
   });
-  
+
+  onUnmounted(() => {
+    // Stop the audio when the component is unmounted
+    audio.value.pause();
+  });
+
   const startGame = async () => {
   try {
     const response = await fetch(`https://m447he.smartdevops.uk/api/check-subscription/${user_id.value}`);
@@ -209,18 +216,12 @@
     }
   }
 
-  .home-container {
-    /* Other styles */
-    background: linear-gradient(to right, #1faa00, #66bb6a); /* Green gradient */
-    animation: shooting-stars 5s linear infinite;
-  }
-
   .animated-text {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: black;
     text-align: center;
     font-family: 'Noto Sans SC', sans-serif; /* Use the imported font */
   }

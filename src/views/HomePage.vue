@@ -1,7 +1,9 @@
 <template>
   <div class="home-container">
-    <h1>达利担保官方比赛</h1>
-    <p>羊了个羊争霸赛，过关就给钱</p>
+    <div class="animated-text">
+      <h1>达利担保官方比赛</h1>
+      <p>羊了个羊争霸赛，过关就给钱</p>
+    </div>
     <button @click="startGame">开始游戏</button>
     <button @click="openLeaderboard">排行榜</button> <!-- Restored leaderboard button -->
     <transition name="modal">
@@ -63,6 +65,7 @@
   import { useRouter } from 'vue-router';
   import { onMounted, ref, computed } from 'vue';
   import state from '../state';
+  import gameStartSound from '../assets/music/home.mp3';
 
   interface Player {
     id: number;
@@ -81,6 +84,9 @@
   
   onMounted(() => {
     user_id.value = (router.currentRoute.value.query.user_id as string) || null;
+    // Play audio when component is mounted
+    const audio = new Audio(gameStartSound);
+    audio.play();
   });
   
   const startGame = async () => {
@@ -183,6 +189,45 @@
 </style>
 
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@700&display=swap'); /* Import a font that supports Chinese characters */
+
+  @keyframes bounce {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  @keyframes shooting-stars {
+    0% {
+      background-position: 0% 0%;
+    }
+    100% {
+      background-position: 100% 100%;
+    }
+  }
+
+  .home-container {
+    /* Other styles */
+    background: linear-gradient(to right, #1faa00, #66bb6a); /* Green gradient */
+    animation: shooting-stars 5s linear infinite;
+  }
+
+  .animated-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    font-family: 'Noto Sans SC', sans-serif; /* Use the imported font */
+  }
+
+  .animated-text h1, .animated-text p {
+    animation: bounce 2s ease infinite;
+  }
   .modal-mask {
   position: fixed;
   z-index: 9998;

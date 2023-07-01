@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed, nextTick } from 'vue'
 import Card from '../components/card.vue'
 import { useGame } from '../core/useGame'
 import { basicCannon, schoolPride } from '../core/utils'
@@ -7,7 +7,7 @@ import { useRoute, useRouter } from "vue-router";
 
 const route = useRoute();
 const router = useRouter();
-const user_id = route.query.user_id;
+const playerId = route.query.playerId;
 const containerRef = ref<HTMLElement | undefined>()
 const clickAudioRef = ref<HTMLAudioElement | undefined>()
 const dropAudioRef = ref<HTMLAudioElement | undefined>()
@@ -16,6 +16,11 @@ const loseAudioRef = ref<HTMLAudioElement | undefined>()
 const welAudioRef = ref<HTMLAudioElement | undefined>()
 const curLevel = ref(1)
 const showTip = ref(false)
+const showLevel = ref(false)
+
+const joinGroup_flag = ref(false)
+const loseTitle_flag = ref(false)
+
 const LevelConfig = [
   { cardNum: 4, layerNum: 2, trap: false },
   { cardNum: 9, layerNum: 3, trap: false },
@@ -58,22 +63,6 @@ function handleClickCard() {
   }
 }
 
-function ThandleRemove(){
-  if( user_data.is_subscribed ){
-    handleRemove()
-  }else{
-    alert('未关注群组')
-  }
-}
-
-function ThandleBack(){
-  if( user_data.is_subscribed ){
-    handleBack()
-  }else{
-    alert('未关注群组')
-  }
-}
-
 function handleDropCard() {
   dropAudioRef.value?.play()
 }
@@ -81,6 +70,10 @@ function handleDropCard() {
 function handleWin() {
   winAudioRef.value?.play()
   // fireworks()
+  showLevel.value = true
+  setTimeout(() => {
+    showLevel.value = false
+  }, 3000) // Increase this duration if needed  
   if (curLevel.value < LevelConfig.length) {
     basicCannon()
     showTip.value = true
@@ -99,10 +92,27 @@ function handleWin() {
 }
 
 function handleLose() {
-  loseAudioRef.value?.play();
+  loseTitle_flag.value = true
+  loseAudioRef.value?.play()
+  nodes.value = [] // Immediately remove the game elements
+  removeList.value = []
+  selectedNodes.value = []
   setTimeout(() => {
-    alert("槽位已满，再接再厉~");
-  }, 500);
+    loseTitle_flag.value = false
+  }, 3000) // This delay should match with the duration of your bounce animation
+}
+
+function handleAfterLoseLeave() {
+  welAudioRef.value?.play()
+  curLevel.value = 0
+  showTip.value = true
+  setTimeout(() => {
+    showTip.value = false
+    setTimeout(() => {
+      initData(LevelConfig[curLevel.value])
+      curLevel.value++
+    }, 1000) // Reduced delay to 1000 milliseconds
+  }, 1500)
 }
 
 onMounted(() => {
@@ -135,6 +145,11 @@ onMounted(() => {
       <transition name="bounce">
         <div v-if="showTip" color="#000" flex items-center justify-center w-full text-28px fw-bold>
           第{{ curLevel + 1 }}关
+        </div>
+      </transition>
+      <transition name="bounce" @after-leave="handleAfterLoseLeave">
+        <div v-show="loseTitle_flag" color="#000" flex items-center justify-center w-full text-28px fw-bold>
+          你输了，再来一次吧
         </div>
       </transition>
     </div>

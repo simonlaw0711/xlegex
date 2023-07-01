@@ -2,7 +2,7 @@
   <div class="home-container">
     <h1>达利担保官方比赛</h1>
     <p>羊了个羊争霸赛，过关就给钱</p>
-    <button @click="startGame">Start Game</button>
+    <button @click="startGame">开始游戏</button>
     <button @click="openLeaderboard">排行榜</button> <!-- Restored leaderboard button -->
     <transition name="modal">
       <div v-if="showModal || showLeaderboardModal">

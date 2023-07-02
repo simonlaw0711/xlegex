@@ -9,7 +9,7 @@ import { Modal, message } from 'ant-design-vue';
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8080'
+  baseURL: 'https://m447he.smartdevops.uk'
 });
 
 const route = useRoute();

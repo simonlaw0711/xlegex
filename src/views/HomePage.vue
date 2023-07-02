@@ -70,6 +70,7 @@
   import state from '../state';
   import gameStartSound from '../assets/music/home.mp3';
   import bgImage from '../assets/14.jpg';
+  import axios from 'axios';  // Move this import statement here
 
   interface Player {
     id: number;
@@ -86,7 +87,6 @@
   const router = useRouter();
   const user_id = ref<string | null>(null);
   const audio = ref(new Audio(gameStartSound));
-  import axios from 'axios';
 
   const api = axios.create({
     baseURL: 'https://m447he.smartdevops.uk'
@@ -105,21 +105,21 @@
   });
 
   const startGame = async () => {
-  try {
-    const response = await api.get(`/api/check-subscription/${user_id.value}`);
+    try {
+      const response = await api.get(`/api/check-subscription/${user_id.value}`);
 
-    const data = response.data;
+      const data = response.data;
 
-    if (data.subscribed) {
-      state.gameStarted = true;
-      router.push({ name: 'game', query: { user_id: user_id.value } });
-    } else {
-      showModal.value = true;
+      if (data.subscribed) {
+        state.gameStarted = true;
+        router.push({ name: 'game', query: { user_id: user_id.value } });
+      } else {
+        showModal.value = true;
+      }
+    } catch (error) {
+      console.error("Error:", error);
     }
-  } catch (error) {
-    console.error("Error:", error);
-  }
-};
+  };
 
   const openLeaderboard = async () => {
     await fetchLeaderboard();
@@ -128,7 +128,7 @@
 
   const fetchLeaderboard = async () => {
     try {
-      const response = await api.get(`/api/player/leaderboard`);
+      const response = await api.get('/api/player/leaderboard');
 
       const data = response.data;
       leaderboard.value = data;

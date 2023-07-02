@@ -5,10 +5,17 @@ import { useGame } from '../core/useGame'
 import { basicCannon, schoolPride } from '../core/utils'
 import { useRoute, useRouter } from "vue-router";
 import inGameMusic from '../assets/music/in-game.mp3';
+import { Modal, message } from 'ant-design-vue';
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: 'http://127.0.0.1:8080'
+});
 
 const route = useRoute();
 const router = useRouter();
-const playerId = route.query.playerId;
+const user_id = route.query.user_id;
+const isModalVisible = ref(false);
 const containerRef = ref<HTMLElement | undefined>()
 const clickAudioRef = ref<HTMLAudioElement | undefined>()
 const dropAudioRef = ref<HTMLAudioElement | undefined>()
@@ -93,6 +100,44 @@ function handleWin() {
   }
 }
 
+function handleOk(){
+  isModalVisible.value = false;
+  // Redirect to the game bot for earning points
+  window.location.href = "https://t.me/daligame_bot";
+}
+
+function handleCancel() {
+  isModalVisible.value = false;
+}
+
+async function ThandleRemove(){
+  try {
+    const response = await api.post(`/api/player/useItem/${user_id}`);
+
+    if (response.data.status === "success") {
+      handleRemove()
+    } else {
+      isModalVisible.value = true;
+    }
+  } catch (error) {
+    console.error("Error using 'back': ", error);
+  }
+}
+
+async function ThandleBack() {
+  try {
+    const response = await api.post(`/api/player/useItem/${user_id}`);
+
+    if (response.data.status === "success") {
+      handleBack()
+    } else {
+      isModalVisible.value = true;
+    }
+  } catch (error) {
+    console.error("Error using 'back': ", error);
+  }
+}
+
 function handleLose() {
   loseTitle_flag.value = true
   loseAudioRef.value?.play()
@@ -131,8 +176,8 @@ onUnmounted(() => {
 
 <template>
   <div flex flex-col w-full h-full>
-    <div text-44px text-center w-full color="#000" fw-600 h-60px flex items-center justify-center mt-10px>
-      兔了个兔
+    <div class="bouncing-text">
+      羊了个羊争霸赛
     </div>
     <div ref="containerRef" flex-1 flex>
       <div w-full relative flex-1>
@@ -162,7 +207,6 @@ onUnmounted(() => {
         </div>
       </transition>
     </div>
-
     <div text-center h-50px flex items-center justify-center>
       <Card
         v-for="item in removeList" :key="item.id" :node="item"
@@ -171,7 +215,7 @@ onUnmounted(() => {
       />
     </div>
     <div w-full flex items-center justify-center>
-      <div border="~ 4px dashed #000" w-295px h-44px flex>
+      <div style=" width: 295px; height: 80px; display: flex; background-image: url('/src/assets/queue_bg.png'); background-size:295px 50px; background-position: center top; background-repeat: no-repeat;">
         <template v-for="item in selectedNodes" :key="item.id">
           <transition name="bounce">
             <Card
@@ -185,13 +229,13 @@ onUnmounted(() => {
     </div>
 
     <div h-50px flex items-center w-full justify-center>
-      <button :disabled="removeFlag" mr-10px @click="handleRemove">
-        移出前三个
-      </button>
-      <button :disabled="backFlag" @click="handleBack">
-        回退
-      </button>
+      <!-- class="bg-[url('/src/assets/tutu2/15.png')]" -->
+      <img src="../assets/skill_remove.png" :disabled="removeFlag" mr-10px @click="ThandleRemove" w-100px mb-50px>
+      <img src="../assets/skill_revoke.png" :disabled="backFlag" @click="ThandleBack" w-100px mb-50px>
     </div>
+    <Modal v-model:visible="isModalVisible" @ok="handleOk" @cancel="handleCancel">
+      您的积分不足，请前往游戏机器人 https://t.me/daligame_bot 获取道具以赚取更多积分。
+    </Modal>
     <audio
       ref="clickAudioRef"
       style="display: none;"
@@ -226,8 +270,12 @@ onUnmounted(() => {
 </template>
 
 <style>
-body{
-  background-color: #c3fe8b;
+body {
+  background: url(../assets/game_bg.png) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
 }
 
 .bounce-enter-active {
@@ -246,6 +294,36 @@ body{
   100% {
     transform: scale(1);
   }
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-30px);
+  }
+  60% {
+    transform: translateY(-15px);
+  }
+}
+
+.bouncing-text {
+  animation: bounce 2s infinite;
+  font-size: 44px;
+  text-align: center;
+  width: 100%;
+  color: #000;
+  font-weight: 600;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 50px;
+}
+
+.border-wrapper {
+  background: url();
 }
 
 .slide-fade-enter-active {

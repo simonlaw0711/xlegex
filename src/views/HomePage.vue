@@ -1,11 +1,13 @@
 <template>
-  <div class="home-container">
-    <div class="animated-text">
+  <div class="home-container" :style="{backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center'}">
+    <!-- <div class="animated-text">
       <h1>达利担保官方比赛</h1>
       <p>羊了个羊争霸赛，过关就给钱</p>
+    </div> -->
+    <div class="button-container">
+      <button @click="startGame" class="home-btn-startGame">开始游戏</button>
+      <button @click="openLeaderboard" class="home-btn-leaderboard">排行榜</button> <!-- Restored leaderboard button -->
     </div>
-    <button @click="startGame">开始游戏</button>
-    <button @click="openLeaderboard">排行榜</button> <!-- Restored leaderboard button -->
     <transition name="modal">
       <div v-if="showModal || showLeaderboardModal">
         <!-- Subscription Modal -->
@@ -66,7 +68,7 @@
   import { onMounted, ref, computed, onUnmounted } from 'vue';
   import state from '../state';
   import gameStartSound from '../assets/music/home.mp3';
-  import inGameMusic from '../assets/music/in-game.mp3';
+  import bgImage from '../assets/14.jpg';
 
   interface Player {
     id: number;
@@ -83,6 +85,11 @@
   const router = useRouter();
   const user_id = ref<string | null>(null);
   const audio = ref(new Audio(gameStartSound));
+  import axios from 'axios';
+
+  const api = axios.create({
+    baseURL: 'http://127.0.0.1:8080'
+  });
   
   onMounted(() => {
     user_id.value = (router.currentRoute.value.query.user_id as string) || null;
@@ -98,25 +105,18 @@
 
   const startGame = async () => {
   try {
-    const response = await fetch(`https://m447he.smartdevops.uk/api/check-subscription/${user_id.value}`);
+    const response = await api.get(`/api/check-subscription/${user_id.value}`);
 
-    if (!response.ok) {
-      throw new Error("Failed to check subscription");
-    }
-
-    const data = await response.json();
+    const data = response.data;
 
     if (data.subscribed) {
       state.gameStarted = true;
-      // Pass the user_id as a query parameter when navigating to the /game page
       router.push({ name: 'game', query: { user_id: user_id.value } });
     } else {
-      // Show an error message or handle the case when the user is not subscribed
       showModal.value = true;
     }
   } catch (error) {
     console.error("Error:", error);
-    // Handle the error, e.g., show an error message to the user
   }
 };
 
@@ -127,17 +127,12 @@
 
   const fetchLeaderboard = async () => {
     try {
-      const response = await fetch('https://m447he.smartdevops.uk/api/player/leaderboard');
+      const response = await api.get(`/api/player/leaderboard`);
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch leaderboard data');
-      }
-
-      const data = await response.json();
+      const data = response.data;
       leaderboard.value = data;
     } catch (error) {
       console.error('Error:', error);
-      // Handle the error, e.g., show an error message to the user
     }
   };
 
@@ -190,7 +185,19 @@
       .player {
         width: 110px;
       }
-
+    }
+    .button-container {
+      position: fixed;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      bottom: 35px;
+      button {
+        margin: 0 10px;
+        background-color: black;
+        color: white;
+        border-radius: 5px;
+      }
     }
   }
 </style>
@@ -274,12 +281,7 @@
   align-items: center;
   min-height: 100vh;
   color: #000; /* Make all text black */
-  }
-
-  .home-container button {
-  color: #fff; /* Reset the button text color to inherit from the parent element */
-  margin-bottom: 10px; /* Add spacing between the buttons */
-  }    
+  }  
 
   .table td {
     vertical-align: middle;

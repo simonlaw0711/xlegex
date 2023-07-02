@@ -6,9 +6,6 @@ const defaultGameConfig: GameConfig = {
   trap: true,
   delNode: false,
 }
-export let game_score = ref(0)
-
-
 
 export function useGame(config: GameConfig): Game {
   const { container, delNode, events = {}, ...initConfig } = { ...defaultGameConfig, ...config }
@@ -23,7 +20,6 @@ export function useGame(config: GameConfig): Game {
   const selectedNodes = ref<CardNode[]>([])
   const size = 40
   let floorList: number[][] = []
-  
 
   function updateState() {
     nodes.value.forEach((o) => {
@@ -32,7 +28,6 @@ export function useGame(config: GameConfig): Game {
   }
 
   function handleSelect(node: CardNode) {
-    // 判断槽位
     if (selectedNodes.value.length === 7)
       return
     node.state = 2
@@ -41,16 +36,13 @@ export function useGame(config: GameConfig): Game {
     const index = nodes.value.findIndex(o => o.id === node.id)
     if (index > -1)
       delNode && nodes.value.splice(index, 1)
+
     // 判断是否有可以消除的节点
     const selectedSomeNode = selectedNodes.value.filter(s => s.type === node.type)
-    // 移除逻辑
     if (selectedSomeNode.length === 2) {
       // 第二个节点索引
       const secondIndex = selectedNodes.value.findIndex(o => o.id === selectedSomeNode[1].id)
       selectedNodes.value.splice(secondIndex + 1, 0, node)
-      // 分数
-      game_score.value ++
-
       // 为了动画效果添加延迟
       setTimeout(() => {
         for (let i = 0; i < 3; i++) {
@@ -74,7 +66,6 @@ export function useGame(config: GameConfig): Game {
       const index = selectedNodes.value.findIndex(o => o.type === node.type)
       if (index > -1)
         selectedNodes.value.splice(index + 1, 0, node)
-        
       else
         selectedNodes.value.push(node)
       // 判断卡槽是否已满，即失败
@@ -83,11 +74,9 @@ export function useGame(config: GameConfig): Game {
         backFlag.value = true
         events.loseCallback && events.loseCallback()
       }
-      
     }
   }
 
-  // 移除功能，此处检测是否加入群组
   function handleSelectRemove(node: CardNode) {
     const index = removeList.value.findIndex(o => o.id === node.id)
     if (index > -1)
@@ -95,7 +84,6 @@ export function useGame(config: GameConfig): Game {
     handleSelect(node)
   }
 
-  // 回退功能，此处检测是否加入群组
   function handleBack() {
     const node = preNode.value
     if (!node)
@@ -110,6 +98,7 @@ export function useGame(config: GameConfig): Game {
 
   function handleRemove() {
   // 从selectedNodes.value中取出3个 到 removeList.value中
+
     if (selectedNodes.value.length < 3)
       return
     removeFlag.value = true

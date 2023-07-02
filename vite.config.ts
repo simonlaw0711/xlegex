@@ -6,7 +6,7 @@ import Unocss from 'unocss/vite'
 export default defineConfig({
   plugins: [
     vue(),
-    Unocss(),
+    Unocss()
   ],
-  base: process.env.NODE_ENV === 'production' ? '/xlegex/' : '/',
+  base: process.env.NODE_ENV === 'production' ? '/' : '/',
 })

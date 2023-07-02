@@ -42,7 +42,8 @@
                       <td class="rank">{{ player.player_rank }}</td>
                       <td>
                         <div class="d-flex">
-                          <img class="avatar" :src="player.avatar" alt="Player Avatar" />
+                          <img v-if="player.avatar" class="avatar" :src="player.avatar" alt="Player Avatar" />
+                          <img v-else class="avatar" src="../assets/avatar.jpeg" alt="Default Avatar" />
                           <span>{{ player.nickname }}</span>
                         </div>
                       </td>

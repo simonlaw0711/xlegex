@@ -27,13 +27,12 @@ const showTip = ref(false)
 const showLevel = ref(false)
 const audio = ref(new Audio(inGameMusic));
 
-const joinGroup_flag = ref(false)
 const loseTitle_flag = ref(false)
 
 const LevelConfig = [
   { cardNum: 4, layerNum: 2, trap: false },
   { cardNum: 9, layerNum: 3, trap: false },
-  { cardNum: 15, layerNum: 6, trap: false },
+  { cardNum: 15, layerNum: 6, trap: true },
 ]
 
 const isWin = ref(false)
@@ -96,6 +95,7 @@ function handleWin() {
   }
   else {
     isWin.value = true
+    api.post(`/api/player/win/${user_id}`)
     schoolPride()
   }
 }
@@ -112,7 +112,7 @@ function handleCancel() {
 
 async function ThandleRemove(){
   try {
-    const response = await api.post(`/api/player/useItem/${user_id}`, { points: 2 });
+    const response = await api.post(`/api/player/useItem/${user_id}?points=2`);
 
     if (response.data.status === "success") {
       handleRemove()
@@ -126,7 +126,7 @@ async function ThandleRemove(){
 
 async function ThandleBack() {
   try {
-    const response = await api.post(`/api/player/useItem/${user_id}`, { points: 1 });
+    const response = await api.post(`/api/player/useItem/${user_id}?points=1`);
 
     if (response.data.status === "success") {
       handleBack()
@@ -193,7 +193,7 @@ onUnmounted(() => {
       </div>
       <transition name="bounce">
         <div v-if="isWin" color="#000" flex items-center justify-center w-full text-28px fw-bold>
-          成功加入兔圈~
+          成功加入羊圈~ 通关次数+1
         </div>
       </transition>
       <transition name="bounce">

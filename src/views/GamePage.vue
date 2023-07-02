@@ -112,7 +112,7 @@ function handleCancel() {
 
 async function ThandleRemove(){
   try {
-    const response = await api.post(`/api/player/useItem/${user_id}`);
+    const response = await api.post(`/api/player/useItem/${user_id}`, { points: 2 });
 
     if (response.data.status === "success") {
       handleRemove()
@@ -120,13 +120,13 @@ async function ThandleRemove(){
       isModalVisible.value = true;
     }
   } catch (error) {
-    console.error("Error using 'back': ", error);
+    console.error("Error using 'remove': ", error);
   }
 }
 
 async function ThandleBack() {
   try {
-    const response = await api.post(`/api/player/useItem/${user_id}`);
+    const response = await api.post(`/api/player/useItem/${user_id}`, { points: 1 });
 
     if (response.data.status === "success") {
       handleBack()

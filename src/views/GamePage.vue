@@ -31,8 +31,8 @@ const loseTitle_flag = ref(false)
 
 const LevelConfig = [
   { cardNum: 4, layerNum: 2, trap: false },
-  { cardNum: 9, layerNum: 3, trap: false },
-  { cardNum: 15, layerNum: 6, trap: true },
+  // { cardNum: 9, layerNum: 3, trap: false },
+  // { cardNum: 15, layerNum: 6, trap: true },
 ]
 
 const isWin = ref(false)
@@ -60,6 +60,15 @@ const {
     loseCallback: handleLose,
   },
 })
+
+function goToHomepage() {
+  router.push({
+    path: "/",
+    query: {
+      user_id: user_id
+    }
+  });
+}
 
 function handleClickCard() {
   if (clickAudioRef.value?.paused) {
@@ -192,11 +201,6 @@ onUnmounted(() => {
         </template>
       </div>
       <transition name="bounce">
-        <div v-if="isWin" color="#000" flex items-center justify-center w-full text-28px fw-bold>
-          成功加入羊圈~ 通关次数+1
-        </div>
-      </transition>
-      <transition name="bounce">
         <div v-if="showTip" color="#000" flex items-center justify-center w-full text-28px fw-bold>
           第{{ curLevel + 1 }}关
         </div>
@@ -204,6 +208,18 @@ onUnmounted(() => {
       <transition name="bounce" @after-leave="handleAfterLoseLeave">
         <div v-show="loseTitle_flag" color="#000" flex items-center justify-center w-full text-28px fw-bold>
           你输了，再来一次吧
+        </div>
+      </transition>
+      <transition name="bounce">
+        <div class="outer-container flex justify-center items-center mt-[-50px]">
+          <div class="content-container flex flex-col items-center justify-center" v-if="isWin">
+            <div color="#000" w-full text-28px fw-bold class="bounce-win">
+              <span v-for="(char, index) in '成功加入羊圈~ 通关次数+1'.split('')" :key="index" class="letter" :style="{ animationDelay: (index * 0.1) + 's' }">
+                {{ char }}
+              </span>
+            </div>
+            <button @click="goToHomepage" class="return-button mt-4">返回主页</button>
+          </div>
         </div>
       </transition>
     </div>
@@ -349,4 +365,35 @@ body {
 .v-leave-to {
   opacity: 0;
 }
+
+.outer-container {
+  width: 100%;
+  height: 100%;
+}
+
+.bounce-win {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  white-space: nowrap;
+}
+
+.letter {
+  display: inline-block;
+  margin-top: 0.5em;
+  text-shadow: rgba(255, 255, 255, 0.4) 0 0 0.05em;
+  animation: bounce-win 0.75s cubic-bezier(0.05, 0, 0.2, 1) infinite alternate;
+}
+
+@keyframes bounce-win {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, -1em, 0);
+  }
+}
+
 </style>

@@ -224,6 +224,12 @@
     }
   }
 
+  .table-responsive {
+    max-height: 300px; /* Adjust as needed */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* Enable smooth scrolling on ios devices */
+  }
+
   .animated-text {
     display: flex;
     flex-direction: column;

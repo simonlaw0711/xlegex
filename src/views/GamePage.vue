@@ -189,7 +189,7 @@ onUnmounted(() => {
       羊了个羊争霸赛
     </div>
     <div ref="containerRef" flex-1 flex>
-      <div w-full relative flex-1>
+      <div class="Card" w-full relative flex-1>
         <template v-for="item in nodes" :key="item.id">
           <transition name="slide-fade">
             <Card
@@ -200,18 +200,18 @@ onUnmounted(() => {
           </transition>
         </template>
       </div>
-      <transition name="bounce">
-        <div v-if="showTip" color="#000" flex items-center justify-center w-full text-28px fw-bold>
-          第{{ curLevel + 1 }}关
-        </div>
-      </transition>
-      <transition name="bounce" @after-leave="handleAfterLoseLeave">
-        <div v-show="loseTitle_flag" color="#000" flex items-center justify-center w-full text-28px fw-bold>
-          你输了，再来一次吧
-        </div>
-      </transition>
-      <transition name="bounce">
-        <div class="outer-container flex justify-center items-center mt-[-50px]">
+      <div class="outer-container flex justify-center items-center mt-[-50px]">
+        <transition name="bounce">
+          <div v-if="showTip" color="#000" flex items-center justify-center w-full text-28px fw-bold>
+            第{{ curLevel + 1 }}关
+          </div>
+        </transition>
+        <transition name="bounce" @after-leave="handleAfterLoseLeave">
+          <div v-show="loseTitle_flag" color="#000" flex items-center justify-center w-full text-28px fw-bold>
+            你输了，再来一次吧
+          </div>
+        </transition>
+        <transition name="bounce">
           <div class="content-container flex flex-col items-center justify-center" v-if="isWin">
             <div color="#000" w-full text-28px fw-bold class="bounce-win">
               <span v-for="(char, index) in '成功加入羊圈~ 通关次数+1'.split('')" :key="index" class="letter" :style="{ animationDelay: (index * 0.1) + 's' }">
@@ -220,8 +220,8 @@ onUnmounted(() => {
             </div>
             <button @click="goToHomepage" class="return-button mt-4">返回主页</button>
           </div>
-        </div>
-      </transition>
+        </transition>
+      </div>
     </div>
     <div text-center h-50px flex items-center justify-center>
       <Card
@@ -324,6 +324,10 @@ body {
   }
 }
 
+.Card {
+  z-index: 1000;
+}
+
 .bouncing-text {
   animation: bounce 2s infinite;
   font-size: 44px;
@@ -367,14 +371,18 @@ body {
 }
 
 .outer-container {
+  position: relative;
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .bounce-win {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
+  text-align: center;
   width: 100%;
   height: 100%;
   white-space: nowrap;
@@ -395,5 +403,4 @@ body {
     transform: translate3d(0, -1em, 0);
   }
 }
-
 </style>

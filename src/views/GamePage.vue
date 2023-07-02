@@ -31,8 +31,8 @@ const loseTitle_flag = ref(false)
 
 const LevelConfig = [
   { cardNum: 4, layerNum: 2, trap: false },
-  // { cardNum: 9, layerNum: 3, trap: false },
-  // { cardNum: 15, layerNum: 6, trap: true },
+  { cardNum: 9, layerNum: 3, trap: false },
+  { cardNum: 15, layerNum: 6, trap: true },
 ]
 
 const isWin = ref(false)

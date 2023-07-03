@@ -9,7 +9,7 @@ import { Modal, message } from 'ant-design-vue';
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://m447he.smartdevops.uk'
+  baseURL: 'https://zh8mi2pxff.execute-api.ap-east-1.amazonaws.com/prod'
 });
 
 const route = useRoute();

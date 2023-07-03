@@ -26,7 +26,8 @@ const curLevel = ref(1)
 const showTip = ref(false)
 const showLevel = ref(false)
 const audio = ref(new Audio(inGameMusic));
-
+const removeFlag = ref(false);
+const backFlag = ref(false);
 const loseTitle_flag = ref(false)
 
 const LevelConfig = [
@@ -42,9 +43,7 @@ const {
   selectedNodes,
   handleSelect,
   handleBack,
-  backFlag,
   handleRemove,
-  removeFlag,
   removeList,
   handleSelectRemove,
   initData,
@@ -124,7 +123,13 @@ async function ThandleRemove(){
     const response = await api.post(`/api/player/useItem/${user_id}?points=2`);
 
     if (response.data.status === "success") {
-      handleRemove()
+      handleRemove();
+      removeFlag.value = true; // Set removeFlag to true when the API call is successful
+
+      // Reset the flag after 0.5 seconds (500 ms)
+      setTimeout(() => {
+        removeFlag.value = false;
+      }, 300);
     } else {
       isModalVisible.value = true;
     }
@@ -138,7 +143,13 @@ async function ThandleBack() {
     const response = await api.post(`/api/player/useItem/${user_id}?points=1`);
 
     if (response.data.status === "success") {
-      handleBack()
+      handleBack();
+      backFlag.value = true; // Set backFlag to true when the API call is successful
+
+      // Reset the flag after 0.5 seconds (500 ms)
+      setTimeout(() => {
+        backFlag.value = false;
+      }, 300);
     } else {
       isModalVisible.value = true;
     }
@@ -243,11 +254,16 @@ onUnmounted(() => {
         </template>
       </div>
     </div>
-
     <div h-50px flex items-center w-full justify-center>
-      <!-- class="bg-[url('/src/assets/tutu2/15.png')]" -->
-      <img src="../assets/skill_remove.png" :disabled="removeFlag" mr-10px @click="ThandleRemove" w-100px mb-50px>
-      <img src="../assets/skill_revoke.png" :disabled="backFlag" @click="ThandleBack" w-100px mb-50px>
+      <img src="../assets/skill_remove.png" :disabled="removeFlag" 
+          :style="{opacity: removeFlag ? '0.5' : '1'}"
+          mr-10px @click="ThandleRemove" 
+          w-100px mb-50px>
+
+      <img src="../assets/skill_revoke.png" :disabled="backFlag" 
+          :style="{opacity: backFlag ? '0.5' : '1'}"
+          @click="ThandleBack" 
+          w-100px mb-50px>
     </div>
     <Modal v-model:visible="isModalVisible" @ok="handleOk" @cancel="handleCancel">
       您的积分不足，请前往游戏机器人 https://t.me/daligame_bot 获取道具以赚取更多积分。

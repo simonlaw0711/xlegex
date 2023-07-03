@@ -231,7 +231,7 @@ onUnmounted(() => {
       />
     </div>
     <div w-full flex items-center justify-center>
-      <div style=" width: 295px; height: 80px; display: flex; background-image: url('/src/assets/queue_bg.png'); background-size:295px 50px; background-position: center top; background-repeat: no-repeat;">
+      <div style=" width: 295px; height: 80px; display: flex; background-image: url('../assets/queue_bg.png'); background-size:295px 50px; background-position: center top; background-repeat: no-repeat;">
         <template v-for="item in selectedNodes" :key="item.id">
           <transition name="bounce">
             <Card

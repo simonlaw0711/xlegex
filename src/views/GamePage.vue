@@ -231,7 +231,7 @@ onUnmounted(() => {
       />
     </div>
     <div w-full flex items-center justify-center>
-      <div style=" width: 295px; height: 80px; display: flex; background-image: url('../assets/queue_bg.png'); background-size:295px 50px; background-position: center top; background-repeat: no-repeat;">
+      <div class="card-holder">
         <template v-for="item in selectedNodes" :key="item.id">
           <transition name="bounce">
             <Card
@@ -292,6 +292,16 @@ body {
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
+}
+
+.card-holder {
+  width: 295px;
+  height: 80px;
+  display: flex;
+  background-image: url('../assets/queue_bg.png');
+  background-size: 295px 50px;
+  background-position: center top;
+  background-repeat: no-repeat;
 }
 
 .bounce-enter-active {

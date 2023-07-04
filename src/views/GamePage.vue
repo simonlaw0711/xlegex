@@ -266,7 +266,7 @@ onUnmounted(() => {
           w-100px mb-50px>
     </div>
     <Modal v-model:visible="isModalVisible" @ok="handleOk" @cancel="handleCancel">
-      您的积分不足，请前往游戏机器人 https://t.me/daligame_bot 获取道具以赚取更多积分。
+      您的积分不足，请前往游戏机器人 https://t.me/jibagame_bot 获取道具以赚取更多积分。
     </Modal>
     <audio
       ref="clickAudioRef"

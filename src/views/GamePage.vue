@@ -7,14 +7,19 @@ import { useRoute, useRouter } from "vue-router";
 import inGameMusic from '../assets/music/in-game.mp3';
 import { Modal, message } from 'ant-design-vue';
 import axios from 'axios';
+import { styleProviderProps } from 'ant-design-vue/es/_util/cssinjs/StyleContext';
 
 const api = axios.create({
   baseURL: 'https://zh8mi2pxff.execute-api.ap-east-1.amazonaws.com/prod'
 });
 
+let ThandleRemoveCounter = 0;
+let ThandleBackCounter = 0;
+
 const route = useRoute();
 const router = useRouter();
 const user_id = route.query.user_id;
+const isSkillExceededModalVisible = ref(false);
 const isModalVisible = ref(false);
 const containerRef = ref<HTMLElement | undefined>()
 const clickAudioRef = ref<HTMLAudioElement | undefined>()
@@ -118,7 +123,16 @@ function handleCancel() {
   isModalVisible.value = false;
 }
 
-async function ThandleRemove(){
+function handleSkillExceededOk() {
+  isSkillExceededModalVisible.value = false;
+}
+
+async function ThandleRemove() {
+  if (ThandleRemoveCounter >= 3) {
+    isSkillExceededModalVisible.value = true;
+    return;
+  }
+  
   try {
     const response = await api.post(`/api/player/useItem/${user_id}?points=2`);
 
@@ -130,6 +144,8 @@ async function ThandleRemove(){
       setTimeout(() => {
         removeFlag.value = false;
       }, 300);
+
+      ThandleRemoveCounter++;  // Increment the counter
     } else {
       isModalVisible.value = true;
     }
@@ -139,6 +155,11 @@ async function ThandleRemove(){
 }
 
 async function ThandleBack() {
+  if (ThandleBackCounter >= 3) {
+    isSkillExceededModalVisible.value = true;
+    return;
+  }
+
   try {
     const response = await api.post(`/api/player/useItem/${user_id}?points=1`);
 
@@ -150,6 +171,8 @@ async function ThandleBack() {
       setTimeout(() => {
         backFlag.value = false;
       }, 300);
+
+      ThandleBackCounter++;  // Increment the counter
     } else {
       isModalVisible.value = true;
     }
@@ -267,6 +290,9 @@ onUnmounted(() => {
     </div>
     <Modal v-model:visible="isModalVisible" @ok="handleOk" @cancel="handleCancel">
       您的积分不足，请前往游戏机器人 https://t.me/jibagame_bot 获取道具以赚取更多积分。
+    </Modal>
+    <Modal v-model:visible="isSkillExceededModalVisible" @ok="handleSkillExceededOk" :cancel-button-props="{ style: { display: 'none' } }">
+      你已经用了三次，不能再用啦
     </Modal>
     <audio
       ref="clickAudioRef"

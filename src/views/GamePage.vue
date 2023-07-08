@@ -7,7 +7,6 @@ import { useRoute, useRouter } from "vue-router";
 import inGameMusic from '../assets/music/in-game.mp3';
 import { Modal, message } from 'ant-design-vue';
 import axios from 'axios';
-import { styleProviderProps } from 'ant-design-vue/es/_util/cssinjs/StyleContext';
 
 const api = axios.create({
   baseURL: 'https://zh8mi2pxff.execute-api.ap-east-1.amazonaws.com/prod'
@@ -38,7 +37,7 @@ const loseTitle_flag = ref(false)
 const LevelConfig = [
   { cardNum: 4, layerNum: 2, trap: false },
   { cardNum: 9, layerNum: 3, trap: false },
-  { cardNum: 15, layerNum: 6, trap: true },
+  { cardNum: 15, layerNum: 6, trap: false },
 ]
 
 const isWin = ref(false)
@@ -116,7 +115,7 @@ function handleWin() {
 function handleOk(){
   isModalVisible.value = false;
   // Redirect to the game bot for earning points
-  window.location.href = "https://t.me/daligame_bot";
+  window.location.href = "https://t.me/jibagame_bot";
 }
 
 function handleCancel() {
@@ -128,7 +127,7 @@ function handleSkillExceededOk() {
 }
 
 async function ThandleRemove() {
-  if (ThandleRemoveCounter >= 3) {
+  if (ThandleRemoveCounter >= 1) {
     isSkillExceededModalVisible.value = true;
     return;
   }
@@ -155,7 +154,7 @@ async function ThandleRemove() {
 }
 
 async function ThandleBack() {
-  if (ThandleBackCounter >= 3) {
+  if (ThandleBackCounter >= 1) {
     isSkillExceededModalVisible.value = true;
     return;
   }
@@ -288,12 +287,17 @@ onUnmounted(() => {
           @click="ThandleBack" 
           w-100px mb-50px>
     </div>
-    <Modal v-model:visible="isModalVisible" @ok="handleOk" @cancel="handleCancel">
-      您的积分不足，请前往游戏机器人 https://t.me/jibagame_bot 获取道具以赚取更多积分。
-    </Modal>
-    <Modal v-model:visible="isSkillExceededModalVisible" @ok="handleSkillExceededOk" :cancel-button-props="{ style: { display: 'none' } }">
-      你已经用了三次，不能再用啦
-    </Modal>
+    <Modal 
+      v-model:visible="isModalVisible"
+      title="您的积分不足"
+      @ok="handleOk"  
+      @cancel="handleCancel"
+      >请前往游戏机器人 https://t.me/jibagame_bot 获取道具以赚取更多积分。</Modal>
+    <Modal
+      v-model:visible="isSkillExceededModalVisible"
+      @ok="handleSkillExceededOk"
+      :cancel-button-props="{ disabled: true }"
+    >你已经使用过啦，不能再用啦</Modal>
     <audio
       ref="clickAudioRef"
       style="display: none;"

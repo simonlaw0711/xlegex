@@ -116,7 +116,7 @@ function handleWin() {
 function handleOk(){
   isModalVisible.value = false;
   // Redirect to the game bot for earning points
-  window.location.href = "https://t.me/daligame_bot";
+  window.location.href = "https://t.me/jibagame_bot";
 }
 
 function handleCancel() {

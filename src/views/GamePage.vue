@@ -7,7 +7,6 @@ import { useRoute, useRouter } from "vue-router";
 import inGameMusic from '../assets/music/in-game.mp3';
 import { Modal, message } from 'ant-design-vue';
 import axios from 'axios';
-import { styleProviderProps } from 'ant-design-vue/es/_util/cssinjs/StyleContext';
 
 const api = axios.create({
   baseURL: 'https://zh8mi2pxff.execute-api.ap-east-1.amazonaws.com/prod'
@@ -38,7 +37,7 @@ const loseTitle_flag = ref(false)
 const LevelConfig = [
   { cardNum: 4, layerNum: 2, trap: false },
   { cardNum: 9, layerNum: 3, trap: false },
-  { cardNum: 15, layerNum: 6, trap: true },
+  { cardNum: 15, layerNum: 6, trap: false },
 ]
 
 const isWin = ref(false)

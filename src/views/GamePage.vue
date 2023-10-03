@@ -42,6 +42,16 @@ const LevelConfig = [
 
 const isWin = ref(false)
 
+// // Generate Game Token
+
+// let gameToken;
+
+// axios.post(`/api/game/start/${user_id}`)
+// .then(response => {
+//     gameToken = response.data.game_token;
+// })
+// .catch(error => console.log(error));
+
 const {
   nodes,
   selectedNodes,

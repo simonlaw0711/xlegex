@@ -16,7 +16,7 @@
             <div class="modal-container">
               <h3>请先关注下面频道，然后开始游戏</h3>
               <p>
-                加入频道: <a href="https://t.me/JBPHH" target="_blank">https://t.me/JBPHH</a>
+                加入频道: <a href="https://t.me/+TWYSsc_8mf04Njgx" target="_blank">https://t.me/+TWYSsc_8mf04Njgx</a>
               </p>
               <button @click="showModal = false">Close</button>
             </div>

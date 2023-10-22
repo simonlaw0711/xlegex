@@ -193,9 +193,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      bottom: 35px;
+      bottom: 100px;
       button {
-        margin: 0 10px;
+        margin: 0 50px;
         background-color: black;
         color: white;
         border-radius: 5px;
